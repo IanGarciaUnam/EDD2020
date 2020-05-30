@@ -1,0 +1,7 @@
+--- src/main/java/mx/unam/ciencias/edd/AccionVerticeArbolBinario.java
++++ src/main/java/mx/unam/ciencias/edd/AccionVerticeArbolBinario.java
+@@ -12,4 +12,3 @@ public interface AccionVerticeArbolBinario<T> {
+      */
+     public void actua(VerticeArbolBinario<T> vertice);
+ }
+-

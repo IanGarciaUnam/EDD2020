@@ -1,0 +1,153 @@
+--- src/main/java/mx/unam/ciencias/edd/ArbolAVL.java
++++ src/main/java/mx/unam/ciencias/edd/ArbolAVL.java
+@@ -22,7 +22,9 @@ public class ArbolAVL<T extends Comparable<T>>
+          * @param elemento el elemento del vértice.
+          */
+         public VerticeAVL(T elemento) {
+-            // Aquí va su código.
++            // Aquí va su código
++            super(elemento);
++          altura=0;
+         }
+ 
+         /**
+@@ -31,6 +33,7 @@ public class ArbolAVL<T extends Comparable<T>>
+          */
+         @Override public int altura() {
+             // Aquí va su código.
++            return altura;
+         }
+ 
+         /**
+@@ -39,6 +42,7 @@ public class ArbolAVL<T extends Comparable<T>>
+          */
+         @Override public String toString() {
+             // Aquí va su código.
++            return super.elemento.toString()+" "+this.altura()+"/"+balance(this);
+         }
+ 
+         /**
+@@ -56,6 +60,7 @@ public class ArbolAVL<T extends Comparable<T>>
+                 return false;
+             @SuppressWarnings("unchecked") VerticeAVL vertice = (VerticeAVL)objeto;
+             // Aquí va su código.
++            return (altura==vertice.altura && super.equals(objeto));
+         }
+     }
+ 
+@@ -81,8 +86,19 @@ public class ArbolAVL<T extends Comparable<T>>
+      */
+     @Override protected Vertice nuevoVertice(T elemento) {
+         // Aquí va su código.
++        return new VerticeAVL(elemento);
+     }
+ 
++    /**
++      *Casteamos a un Vertice ArbolBinarioOrdenado to VerticeAVL
++      *
++      */
++    private VerticeAVL VerticeAVL(VerticeArbolBinario<T> v){
++      return (VerticeAVL) v;
++    }
++
++
++
+     /**
+      * Agrega un nuevo elemento al árbol. El método invoca al método {@link
+      * ArbolBinarioOrdenado#agrega}, y después balancea el árbol girándolo como
+@@ -91,6 +107,57 @@ public class ArbolAVL<T extends Comparable<T>>
+      */
+     @Override public void agrega(T elemento) {
+         // Aquí va su código.
++        super.agrega(elemento);
++
++        rebalanceoAxl(VerticeAVL(ultimoAgregado.padre));
++
++    }
++
++    private int balance(VerticeAVL v){
++        if(v==null)return 0;
++        return altura(VerticeAVL(v.izquierdo)) - altura(VerticeAVL(v.derecho));
++    }
++
++    private int altura(VerticeAVL avl){
++      if(avl==null)return -1;
++
++      return avl.altura;
++    }
++
++    private int actualiza(VerticeAVL v){
++      return 1 + Integer.max(altura(VerticeAVL(v.izquierdo)), altura(VerticeAVL(v.derecho))) ;
++    }
++
++    private void rebalanceoAxl(VerticeAVL avl){
++
++        if(avl==null)return; //Escape
++
++
++        avl.altura=actualiza(avl);
++
++        int balance=balance(avl);
++        if(balance(avl)==-2){
++            VerticeAVL q = VerticeAVL(avl.derecho);
++            if(balance(q)==1){
++              super.giraDerecha(q);
++              q.altura=actualiza(q);
++              q=VerticeAVL(avl.derecho);
++            }
++            super.giraIzquierda(avl);
++          avl.altura = actualiza(avl);
++        }else if(balance==2){
++          VerticeAVL p = VerticeAVL(avl.izquierdo);
++
++            if(balance(avl) == -1){
++              super.giraIzquierda(p);
++              p.altura=actualiza(p);
++              p=VerticeAVL(avl.izquierdo);
++            }
++          super.giraDerecha(avl);
++          avl.altura=actualiza(avl);
++        }
++
++        rebalanceoAxl(VerticeAVL(avl.padre));
+     }
+ 
+     /**
+@@ -100,8 +167,37 @@ public class ArbolAVL<T extends Comparable<T>>
+      */
+     @Override public void elimina(T elemento) {
+         // Aquí va su código.
++        if(elemento==null) return;
++
++        VerticeAVL e = VerticeAVL(super.busca(elemento));
++
++        if(e==null)return;
++
++
++        if(e.hayIzquierdo() && e.hayDerecho())
++          e= VerticeAVL(super.intercambiaEliminable(e));
++        /***Verificar   que solo tenga un hijo***/
++        boolean fantasma=false;
++        if(!e.hayIzquierdo() && !e.hayDerecho()){
++          /**Agregamos hijo fantasma s.p.g -> hayIzquierdo**/
++          e.izquierdo=nuevoVertice(null);
++          e.izquierdo.padre=e;
++          fantasma=true;
++        }
++
++        /****Desconectando vértices***/
++        if(e.hayDerecho() ^e.hayIzquierdo())
++        eliminaVertice(e);
++
++        if(fantasma)
++        eliminaVertice(e.izquierdo);
++
++
++        rebalanceoAxl(VerticeAVL(e.padre));
++        elementos--;
+     }
+ 
++
+     /**
+      * Lanza la excepción {@link UnsupportedOperationException}: los árboles AVL
+      * no pueden ser girados a la derecha por los usuarios de la clase, porque

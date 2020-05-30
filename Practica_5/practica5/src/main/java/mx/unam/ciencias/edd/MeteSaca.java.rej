@@ -1,0 +1,73 @@
+--- src/main/java/mx/unam/ciencias/edd/MeteSaca.java
++++ src/main/java/mx/unam/ciencias/edd/MeteSaca.java
+@@ -23,6 +23,7 @@ public abstract class MeteSaca<T> {
+          */
+         public Nodo(T elemento) {
+             // Aquí va su código.
++            this.elemento=elemento;
+         }
+     }
+ 
+@@ -44,6 +45,18 @@ public abstract class MeteSaca<T> {
+      */
+     public T saca() {
+         // Aquí va su código.
++        if(cabeza==null)
++        throw new NoSuchElementException();
++
++        Nodo copy = cabeza;
++
++        if(cabeza.siguiente==rabo){
++          cabeza=rabo;
++        }else{
++          cabeza=cabeza.siguiente;
++        }
++
++        return copy.elemento;
+     }
+ 
+     /**
+@@ -54,6 +67,10 @@ public abstract class MeteSaca<T> {
+      */
+     public T mira() {
+         // Aquí va su código.
++        if(cabeza==null)
++        throw new NoSuchElementException();
++
++        return cabeza.elemento;
+     }
+ 
+     /**
+@@ -63,6 +80,7 @@ public abstract class MeteSaca<T> {
+      */
+     public boolean esVacia() {
+         // Aquí va su código.
++        return cabeza==null;
+     }
+ 
+     /**
+@@ -77,5 +95,23 @@ public abstract class MeteSaca<T> {
+             return false;
+         @SuppressWarnings("unchecked") MeteSaca<T> m = (MeteSaca<T>)object;
+         // Aquí va su código.
+-    }
++
++        if(this.esVacia() && m.esVacia())
++        return true;
++
++        Nodo local=cabeza;
++        Nodo foraneo=m.cabeza;
++
++        while(local != null && foraneo != null){
++          if(!local.elemento.equals(foraneo.elemento))
++          return false;
++
++          local=local.siguiente;
++          foraneo=foraneo.siguiente;
++        }
++
++
++        return local==foraneo;
++  }
++
+ }
