@@ -1,7 +1,7 @@
 Estructuras de Datos
 ====================
 
-Proyecto 3: COntador de Palabras HTML
+Proyecto 3: Contador de Palabras HTML
 -----------------------
 Ian Israel García Vázquez
 ### Fecha de entrega:  19 de Junio de 2020
